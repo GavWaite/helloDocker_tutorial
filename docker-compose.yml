@@ -1,3 +1,6 @@
+# This YAML file allows us to further configure the Docker container
+# in addition to the Dockerfile
+
 version: '3.5'
 services:
  web_dev:
@@ -10,6 +13,20 @@ services:
    - ENV=development
    - PORT=4000
    - DB=mongodb://mongodb:27017/todoDev
+ # New mongodb service which allows us to use MongoDB from Docker
+ mongodb:
+   image: mongo:latest
+   container_name: "mongodb"
+   # Set envirnoment variables in the local env to allow us to finf the correct folders
+   environment:
+    - MONGO_DATA_DIR=/usr/data/db
+    - MONGO_LOG_DIR=/dev/null
+   # Important - actually mount the database somewhere
+   volumes:
+    - ./data/db:/usr/data/db
+   ports:
+    - 27017:27017
+   command: mongod --smallfiles --logpath=/dev/null # --quiet
 networks:
  default:
   name: web_dev
